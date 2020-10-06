@@ -1,0 +1,127 @@
+<!--
+  ~ Developed by Guilherme F. Schling.
+  ~ Last time updated: 10/09/2020 21:48.
+  ~ Copyright (c) 2020.
+  -->
+
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:id="mainPane"
+            fx:controller="com.sequencer.Controller" style="-fx-background-color: white">
+    <top>
+        <HBox style="-fx-background-color: #1f1f1f; -fx-padding: 10px;">
+            <ImageView fitHeight="30" preserveRatio="true">
+                <Image url="@images/twLogoCabecalho.png"/>
+            </ImageView>
+        </HBox>
+    </top>
+    <center>
+        <GridPane alignment="TOP_CENTER" hgap="10" vgap="10">
+            <padding>
+                <Insets top="20"/>
+            </padding>
+            <Label text="Proporção 5000:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+            <Spinner fx:id="ratio5kField" min="0" max="100" initialValue="1" amountToStepBy="1" GridPane.rowIndex="0"
+                     GridPane.columnIndex="1" prefWidth="80"/>
+            <CheckBox fx:id="doNotLoad5k" text="Excluir 5000" GridPane.rowIndex="0" GridPane.columnIndex="2">
+                <tooltip>
+                    <Tooltip
+                            text="Marcar esta opção quando não houver necessidade de incluir a linha 5000 no planejamento."
+                            prefWidth="200" wrapText="true"/>
+                </tooltip>
+            </CheckBox>
+
+
+            <Label text="Proporção 6000 e 7000:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <Spinner fx:id="ratio6And7kField" min="0" max="100" initialValue="2" amountToStepBy="1"
+                     GridPane.rowIndex="1" GridPane.columnIndex="1" prefWidth="80"/>
+            <CheckBox fx:id="doNotLoad6And7k" text="Excluir 6000 e 7000" GridPane.rowIndex="1" GridPane.columnIndex="2">
+                <tooltip>
+                    <Tooltip
+                            text="Marcar esta opção quando não houver necessidade de incluir a linha 6000 e 7000 no planejamento."
+                            prefWidth="200" wrapText="true"/>
+                </tooltip>
+            </CheckBox>
+            <Label text="Proporção 8000:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <Spinner fx:id="ratio8kField" min="0" max="100" initialValue="1" amountToStepBy="1"
+                     GridPane.rowIndex="2" GridPane.columnIndex="1" prefWidth="80"/>
+
+            <CheckBox fx:id="doNotLoad8k" text="Excluir 8000" GridPane.rowIndex="2" GridPane.columnIndex="2"
+                      selected="true">
+                <tooltip>
+                    <Tooltip
+                            text="Marcar esta opção quando não houver necessidade de incluir a linha 8000 no planejamento."
+                            prefWidth="200" wrapText="true"/>
+                </tooltip>
+            </CheckBox>
+
+            <Label text="Último Rack Planejado:" GridPane.rowIndex="3" GridPane.columnIndex="0"
+                   GridPane.valignment="BOTTOM">
+                <padding>
+                    <Insets top="20"/>
+                </padding>
+            </Label>
+            <TextField fx:id="lastRackTwField" prefWidth="200" GridPane.rowIndex="3" GridPane.columnIndex="1"
+                       GridPane.valignment="BOTTOM" GridPane.columnSpan="2">
+                <tooltip>
+                    <Tooltip
+                            text="Informar o número do último rack produzido ou informar um texto que será adicionado como prefixo de todos os racks planejados."
+                            prefWidth="200" wrapText="true"/>
+                </tooltip>
+            </TextField>
+            <Button fx:id="dropButton" text="Arraste aqui ou clique para procurar o arquivo..." prefWidth="230"
+                    wrapText="true" textAlignment="CENTER" minHeight="100" onAction="#chooseFile"
+                    GridPane.rowIndex="4"
+                    style="-fx-border-style: solid; -fx-border-color: #838383; -fx-border-width: 2px; -fx-background-color: whitesmoke"
+                    GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="RIGHT">
+                <GridPane.margin>
+                    <Insets top="30"/>
+                </GridPane.margin>
+                <tooltip>
+                    <Tooltip
+                            text="Selecionar o arquivo que contém as ordens de produção do cliente."
+                            prefWidth="200" wrapText="true"/>
+                </tooltip>
+            </Button>
+            <!--            <Button text="Selecionar Arquivo..." prefWidth="230" onAction="#chooseFile" GridPane.rowIndex="4"-->
+            <!--                    GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="RIGHT">-->
+            <!--                <GridPane.margin>-->
+            <!--                    <Insets top="60"/>-->
+            <!--                </GridPane.margin>-->
+            <!--                <tooltip>-->
+            <!--                    <Tooltip-->
+            <!--                            text="Selecionar o arquivo que contém as ordens de produção do cliente."-->
+            <!--                            prefWidth="200" wrapText="true"/>-->
+            <!--                </tooltip>-->
+            <!--            </Button>-->
+            <Button text="Realizar Planejamento" prefWidth="230" onAction="#load" GridPane.rowIndex="5"
+                    GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="RIGHT">
+                <GridPane.margin>
+                    <Insets top="10"/>
+                </GridPane.margin>
+                <tooltip>
+                    <Tooltip
+                            text="Realizar o sequenciamento da produção e exportar o arquivo com os resultados."
+                            prefWidth="200" wrapText="true"/>
+                </tooltip>
+            </Button>
+        </GridPane>
+    </center>
+    <bottom>
+        <GridPane alignment="CENTER_LEFT" style="-fx-background-color: #333333;">
+            <Label text="Made by:: Guilherme F. Schling (2020)"
+                   style="-fx-font-family: 'MV Boli' ;-fx-font-size: 0.8em; -fx-text-fill: #dcdcdc;"
+                   HBox.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.columnIndex="0" GridPane.halignment="LEFT"
+                   GridPane.hgrow="ALWAYS"/>
+            <ProgressBar fx:id="progress" prefWidth="150" GridPane.rowIndex="0" GridPane.columnIndex="1"
+                         GridPane.halignment="RIGHT" visible="false"/>
+            <ImageView fx:id="successfulImage" fitHeight="15" preserveRatio="true" GridPane.rowIndex="0"
+                       GridPane.columnIndex="2"
+                       GridPane.rowSpan="2" GridPane.halignment="RIGHT"/>
+        </GridPane>
+    </bottom>
+</BorderPane>
