@@ -1,6 +1,6 @@
 /*
  * Developed by Guilherme F. Schling.
- * Last time updated: 23/09/2020 22:10.
+ * Last time updated: 10/12/2020 21:21.
  * Copyright (c) 2020.
  */
 
@@ -139,7 +139,8 @@ public class Controller {
             if (!planner.isValidFile(Paths.get(file.toURI()))) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Arquivo Inválido");
-                alert.setHeaderText("O arquivo selecionado não é válido.\n\nÉ necessário selecionar um arquivo\nextraído do sistema do cliente!");
+                alert.setHeaderText("O arquivo selecionado não é válido.\n\nÉ necessário selecionar um arquivo\ninalterado extraído do sistema do\ncliente " +
+                        "em inglês ou em português!");
                 alert.show();
                 return false;
             }

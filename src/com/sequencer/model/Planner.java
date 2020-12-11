@@ -1,6 +1,6 @@
 /*
  * Developed by Guilherme F. Schling.
- * Last time updated: 23/09/2020 22:10.
+ * Last time updated: 10/12/2020 21:21.
  * Copyright (c) 2020.
  */
 
@@ -15,7 +15,6 @@ import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -49,7 +48,7 @@ public class Planner extends Service<ObservableList<Rack>> {
         this.filePath = filePath;
         if (filePath != null) {
             try {
-                this.loadedWorkbook = new XSSFWorkbook(new FileInputStream(new File(filePath.toUri().getPath())));
+                this.loadedWorkbook = new XSSFWorkbook(new FileInputStream(filePath.toUri().getPath()));
                 this.savedWorkBook = new XSSFWorkbook();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -168,7 +167,13 @@ public class Planner extends Service<ObservableList<Rack>> {
         String mn = headerRow.getCell(5).getStringCellValue();
         String quantity = headerRow.getCell(6).getStringCellValue();
 
-        return carNumber.equals("Número do Carro") && rackNumber.equals("Contador") && orderNumber.equals("Ordem") && mn.equals("Material Componente") && quantity.equals("Qtd do componente no carro");
+        boolean result = carNumber.equals("Número do Carro") && rackNumber.equals("Contador") && orderNumber.equals("Ordem") && mn.equals("Material " +
+                "Componente") && quantity.equals("Qtd do componente no carro");
+        if (!result) {
+            result = carNumber.equals("Cart Number") && rackNumber.equals("Cart Counter") && orderNumber.equals("Order") && mn.equals("Component " +
+                    "Material") && quantity.equals("Qty of the component on the cart");
+        }
+        return result;
     }
 
     /**
@@ -179,7 +184,7 @@ public class Planner extends Service<ObservableList<Rack>> {
      */
     public boolean isValidFile(Path filePath) {
         boolean result = false;
-        try (XSSFWorkbook loadedWorkbook = new XSSFWorkbook(new FileInputStream(new File(filePath.toUri().getPath())))) {
+        try (XSSFWorkbook loadedWorkbook = new XSSFWorkbook(new FileInputStream(filePath.toUri().getPath()))) {
             Sheet sheet = loadedWorkbook.getSheetAt(0);
             Iterator<Row> iterator = sheet.iterator();
 
@@ -192,6 +197,14 @@ public class Planner extends Service<ObservableList<Rack>> {
                 String quantity = headerRow.getCell(6).getStringCellValue();
                 result = carNumber.equals("Número do Carro") && rackNumber.equals("Contador") && orderNumber.equals("Ordem") && mn.equals("Material " +
                         "Componente") && quantity.equals("Qtd do componente no carro");
+
+                if (!result) {
+                    result = carNumber.equals("Cart Number") && rackNumber.equals("Cart Counter") && orderNumber.equals("Order") && mn.equals("Component " +
+                            "Material") && quantity.equals("Qty of the component on the cart");
+                }
+                return result;
+
+
             } catch (Exception e) {
                 return result;
             }
@@ -400,7 +413,7 @@ public class Planner extends Service<ObservableList<Rack>> {
 
             sheet.autoSizeColumn(0);
             sheet.autoSizeColumn(2);
-            try (FileOutputStream file = new FileOutputStream(new File(filePath.getParent() + "/Plano de produção.xlsx"))) {
+            try (FileOutputStream file = new FileOutputStream(filePath.getParent() + "/Plano de produção.xlsx")) {
                 savedWorkBook.write(file);
                 System.out.println("Arquivo de planejamento da produção salvo com sucesso!");
             } catch (IOException e) {
