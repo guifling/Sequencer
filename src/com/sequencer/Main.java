@@ -38,7 +38,7 @@ public class Main extends Application {
 
         primaryStage.setTitle("Sequencer");
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/com/sequencer/images/logoTw163x163.png")));
-        primaryStage.setScene(new Scene(root, 800, 450));
+        primaryStage.setScene(new Scene(root, 800, 600));
         primaryStage.show();
     }
 }

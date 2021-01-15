@@ -13,7 +13,7 @@ public class Rack {
     private String plannedRackNumber;
     private int rackNumber;
     private int line;
-    private List<ManufacturingOrder> orders;
+    private final List<ManufacturingOrder> orders;
 
     public Rack() {
         this.orders = new ArrayList<>();
@@ -50,10 +50,6 @@ public class Rack {
 
     public void setLine(int line) {
         this.line = line;
-    }
-
-    public String getPlannedRackNumber() {
-        return plannedRackNumber;
     }
 
     public void setPlannedRackNumber(String plannedRackNumber) {

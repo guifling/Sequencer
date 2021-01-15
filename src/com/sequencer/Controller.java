@@ -1,7 +1,7 @@
 /*
  * Developed by Guilherme F. Schling.
- * Last time updated: 10/12/2020 21:21.
- * Copyright (c) 2020.
+ * Last time updated: 14/01/2021 23:19.
+ * Copyright (c) 2021.
  */
 
 package com.sequencer;
@@ -29,11 +29,11 @@ public class Controller {
     @FXML
     private BorderPane mainPane;
     @FXML
-    private TextField lastRackTwField;
+    private TextField lastRackTwField, lastRack5kField, lastRackTw6And7kField, lastRack8kField;
     @FXML
     private Spinner<Integer> ratio5kField, ratio6And7kField, ratio8kField;
     @FXML
-    private CheckBox doNotLoad5k, doNotLoad6And7k, doNotLoad8k;
+    private CheckBox doNotLoad5k, doNotLoad6And7k, doNotLoad8k, combineMachines;
     @FXML
     private ImageView successfulImage;
     @FXML
@@ -86,11 +86,31 @@ public class Controller {
             readErrorAlert.show();
             return;
         }
+        int lastRack5k = 0;
+        int lastRack6And7k = 0;
+        int lastRack8k = 0;
+        try {
+            lastRack5k = Integer.parseInt(lastRack5kField.getText());
+        } catch (Exception e) {
+
+        }
+        try {
+            lastRack6And7k = Integer.parseInt(lastRackTw6And7kField.getText());
+        } catch (Exception e) {
+
+        }
+        try {
+            lastRack8k = Integer.parseInt(lastRack8kField.getText());
+        } catch (Exception e) {
+
+        }
+
         rackTw = lastRackTwField.getText();
 
         if (!plannerIsRunning) {
             plannerIsRunning = true;
-            planner = new Planner(Paths.get(chosenFile.toURI()), ratio5k, ratio6And7k, ratio8k, rackTw);
+            planner = new Planner(Paths.get(chosenFile.toURI()), ratio5k, ratio6And7k, ratio8k, rackTw, lastRack5k, lastRack6And7k, lastRack8k, combineMachines.isSelected());
+
             planner.setDoNotLoad5k(doNotLoad5k.isSelected());
             planner.setDoNotLoad6And7k(doNotLoad6And7k.isSelected());
             planner.setDoNotLoad8k(doNotLoad8k.isSelected());

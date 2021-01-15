@@ -1,7 +1,7 @@
 /*
  * Developed by Guilherme F. Schling.
- * Last time updated: 10/12/2020 21:21.
- * Copyright (c) 2020.
+ * Last time updated: 14/01/2021 23:19.
+ * Copyright (c) 2021.
  */
 
 package com.sequencer.model;
@@ -28,6 +28,9 @@ public class Planner extends Service<ObservableList<Rack>> {
     private final int ratio6And7k;
     private final int ratio8k;
     private final String lastRackTw;
+    private final int lastRack5k;
+    private final int lastRack6And7k;
+    private final int lastRack8k;
     private final Path filePath;
     private XSSFWorkbook loadedWorkbook;
     private XSSFWorkbook savedWorkBook;
@@ -35,16 +38,23 @@ public class Planner extends Service<ObservableList<Rack>> {
     private boolean doNotLoad5k;
     private boolean doNotLoad6And7k;
     private boolean doNotLoad8k;
+    private final boolean combineMachines;
 
     public Planner() {
-        this(null, 0, 0, 0, null);
+        this(null, 0, 0, 0, null, 0, 0, 0, true);
     }
 
-    public Planner(Path filePath, int ratio5k, int ratio6And7k, int ratio8k, String lastRackTw) {
+    public Planner(Path filePath, int ratio5k, int ratio6And7k, int ratio8k, String lastRackTw, int lastRack5k, int lastRack6And7k, int lastRack8k,
+                   boolean combineMachines) {
         this.ratio5k = ratio5k;
         this.ratio6And7k = ratio6And7k;
         this.ratio8k = ratio8k;
         this.lastRackTw = lastRackTw;
+        this.lastRack5k = lastRack5k;
+        this.lastRack6And7k = lastRack6And7k;
+        this.lastRack8k = lastRack8k;
+        this.combineMachines = combineMachines;
+
         this.filePath = filePath;
         if (filePath != null) {
             try {
@@ -74,10 +84,8 @@ public class Planner extends Service<ObservableList<Rack>> {
                     ObservableList<Rack> plannedRacks = productionPlaning(createdRacks);
                     updateProgress(3, maxProgress);
                     productionPlaning = plannedRacks;
-
                     addTwIdentificationToRacks(productionPlaning);
                     updateProgress(4, maxProgress);
-
                     writeProductionPlanningFile();
                     updateProgress(5, maxProgress);
                 }
@@ -107,7 +115,6 @@ public class Planner extends Service<ObservableList<Rack>> {
             Sheet sheet = loadedWorkbook.getSheetAt(0);
             Iterator<Row> iterator = sheet.iterator();
 
-
             if (!isValidFile()) {
                 return null;
             }
@@ -117,6 +124,18 @@ public class Planner extends Service<ObservableList<Rack>> {
                 Row row = iterator.next();
                 int carNumber = Integer.parseInt(row.getCell(1).getStringCellValue());
                 int rackNumber = Integer.parseInt(row.getCell(2).getStringCellValue());
+
+                if (carNumber == 148 && lastRack8k >= rackNumber) {
+                    iterator.remove();
+                    continue;
+                } else if (carNumber == 149 && lastRack5k >= rackNumber) {
+                    iterator.remove();
+                    continue;
+                } else if (carNumber == 150 && lastRack6And7k >= rackNumber) {
+                    iterator.remove();
+                    continue;
+                }
+
                 long orderNumber = Long.parseLong(row.getCell(3).getStringCellValue());
                 String mn = row.getCell(5).getStringCellValue();
                 int quantity = (int) row.getCell(6).getNumericCellValue();
@@ -222,26 +241,124 @@ public class Planner extends Service<ObservableList<Rack>> {
      */
     private List<Rack> createRacks(List<ManufacturingOrder> orderList) {
         List<Rack> racks = new ArrayList<>();
-        Rack newRack = new Rack();
 
-        for (ManufacturingOrder order : orderList) {
-            if (racks.isEmpty()) {
-                newRack.setRackNumber(order.getRackNumber());
-                newRack.setLine(order.getLine());
-                newRack.addOrder(order);
-                racks.add(newRack);
-            } else if (order.getRackNumber() == newRack.getRackNumber()) {
-                newRack.setRackNumber(order.getRackNumber());
-                newRack.setLine(order.getLine());
-                newRack.addOrder(order);
-            } else {
-                newRack = new Rack();
-                newRack.setRackNumber(order.getRackNumber());
-                newRack.setLine(order.getLine());
-                newRack.addOrder(order);
-                racks.add(newRack);
+        if (combineMachines) {
+            List<Machine> machines = new ArrayList<>();
+            while (!orderList.isEmpty()) {
+                Machine machine = null;
+                for (ManufacturingOrder order : orderList) {
+                    if (machine == null) {
+                        machine = new Machine(order.getOrderNumber(), order.getLine());
+                        machine.addOrder(order);
+                    } else {
+                        if (machine.getOrderNumber() == order.getOrderNumber()) {
+                            machine.addOrder(order);
+                        }
+                    }
+
+                }
+
+                for (ManufacturingOrder order : machine.getOrders()) {
+                    orderList.remove(order);
+                }
+
+
+                machines.add(machine);
+            }
+
+
+            int ordersToPlan = 0;
+
+            for (Machine machine : machines) {
+                ordersToPlan += machine.getOrders().size();
+            }
+
+            ObservableList<Pack> plannedPacks = FXCollections.observableArrayList();
+
+            List<Machine> machinesTobePlanned5k = new ArrayList<>();
+            List<Machine> machinesTobePlanned6And7k = new ArrayList<>();
+            List<Machine> machinesTobePlanned8k = new ArrayList<>();
+
+            for (Machine machine : machines) {
+                if (machine.getLine() == 149) {
+                    machinesTobePlanned5k.add(machine);
+                }
+            }
+            for (Machine machine : machinesTobePlanned5k) {
+                machines.remove(machine);
+            }
+
+            for (Machine machine : machines) {
+                if (machine.getLine() == 148) {
+                    machinesTobePlanned8k.add(machine);
+                }
+            }
+            for (Machine machine : machinesTobePlanned8k) {
+                machines.remove(machine);
+            }
+            for (Machine machine : machines) {
+                if (machine.getLine() == 150) {
+                    machinesTobePlanned6And7k.add(machine);
+                }
+            }
+            for (Machine machine : machinesTobePlanned6And7k) {
+                machines.remove(machine);
+            }
+
+            int plannedOrders = 0;
+            while (plannedOrders != ordersToPlan) {
+                combineMachines(machinesTobePlanned5k, plannedPacks, 4);
+                combineMachines(machinesTobePlanned6And7k, plannedPacks, 3);
+                combineMachines(machinesTobePlanned8k, plannedPacks, 1);
+                plannedOrders = 0;
+                for (Pack pack : plannedPacks) {
+                    for (Machine machine : pack.getMachines()) {
+                        for (ManufacturingOrder order : machine.getOrders()) {
+                            plannedOrders++;
+                        }
+                    }
+
+                }
+            }
+
+
+            for (Pack pack : plannedPacks) {
+                Rack rack = new Rack();
+                for (Machine machine : pack.getMachines()) {
+                    for (ManufacturingOrder order : machine.getOrders()) {
+                        rack.getOrders().add(order);
+                    }
+                }
+                racks.add(rack);
+            }
+
+            for (Rack rack : racks) {
+                rack.setLine(rack.getOrders().get(0).getLine());
+            }
+
+
+        } else {
+            Rack newRack = new Rack();
+            for (ManufacturingOrder order : orderList) {
+                if (racks.isEmpty()) {
+                    newRack.setRackNumber(order.getRackNumber());
+                    newRack.setLine(order.getLine());
+                    newRack.addOrder(order);
+                    racks.add(newRack);
+                } else if (order.getRackNumber() == newRack.getRackNumber()) {
+                    newRack.setRackNumber(order.getRackNumber());
+                    newRack.setLine(order.getLine());
+                    newRack.addOrder(order);
+                } else {
+                    newRack = new Rack();
+                    newRack.setRackNumber(order.getRackNumber());
+                    newRack.setLine(order.getLine());
+                    newRack.addOrder(order);
+                    racks.add(newRack);
+                }
             }
         }
+
         return racks;
     }
 
@@ -285,6 +402,7 @@ public class Planner extends Service<ObservableList<Rack>> {
             sourceRackList.remove(rack);
         }
 
+
         while (plannedList.size() != racksToPlan) {
             makeSequence(racksTobePlanned5k, plannedList, ratio5k);
             makeSequence(racksTobePlanned6And7k, plannedList, ratio6And7k);
@@ -322,34 +440,77 @@ public class Planner extends Service<ObservableList<Rack>> {
     }
 
     /**
+     * Combines different machines in the same Pack according to the user settings.
+     *
+     * @param machinesToBePlanned  Machines to be planned.
+     * @param plannedPacks         Planned packs.
+     * @param maxMachinesInThePack The maximum number of machines possible to stored in the same pack.
+     */
+    private void combineMachines(List<Machine> machinesToBePlanned, List<Pack> plannedPacks, int maxMachinesInThePack) {
+
+        if (!machinesToBePlanned.isEmpty()) {
+            Pack pack = new Pack();
+            int getIndex;
+            for (int i = 0; i < maxMachinesInThePack; i++) {
+                if (pack.getMachines().isEmpty()) {
+                    pack = new Pack();
+                    plannedPacks.add(pack);
+                }
+                if (!machinesToBePlanned.isEmpty()) {
+                    getIndex = i;
+                    if (i != 0) {
+                        getIndex -= i;
+                    }
+                    Machine machine = machinesToBePlanned.get(getIndex);
+                    pack.addMachine(machine);
+                    machinesToBePlanned.remove(machine);
+                    continue;
+                }
+                break;
+            }
+        }
+
+    }
+
+    /**
      * Adds an internal identification to the racks.
      *
      * @param productionPlaning Racks
      */
     private void addTwIdentificationToRacks(List<Rack> productionPlaning) {
+
         if (!productionPlaning.isEmpty()) {
+
             try {
-                if (!lastRackTw.isEmpty()) {
-                    long lastRackTw = Long.parseLong(this.lastRackTw);
+                long lastRackTw = Long.parseLong(this.lastRackTw);
+                if (!this.lastRackTw.isEmpty()) {
                     lastRackTw++;
                     for (Rack rack : productionPlaning) {
-                        String newRackNumber = (lastRackTw++) + "-" + rack.getRackNumber();
+                        String newRackNumber = String.valueOf(lastRackTw++);//+ "-" + rack.getRackNumber();
                         rack.setPlannedRackNumber(newRackNumber);
+                        for (ManufacturingOrder order : rack.getOrders()) {
+                            order.setCompleteRackNumber(newRackNumber + "-" + order.getRackNumber());
+                        }
                     }
                 } else {
                     for (Rack rack : productionPlaning) {
                         String newRackNumber = String.valueOf(rack.getRackNumber());
                         rack.setPlannedRackNumber(newRackNumber);
+                        for (ManufacturingOrder order : rack.getOrders()) {
+                            order.setCompleteRackNumber(newRackNumber);
+                        }
                     }
                 }
             } catch (Exception e) {
                 String newRackNumber = "";
-                if (!lastRackTw.trim().isEmpty()) {
-                    System.out.println("Last rack tw " + lastRackTw);
+                if (!this.lastRackTw.trim().isEmpty()) {
                     newRackNumber = lastRackTw + "-";
                 }
                 for (Rack rack : productionPlaning) {
                     rack.setPlannedRackNumber(newRackNumber + rack.getRackNumber());
+                    for (ManufacturingOrder order : rack.getOrders()) {
+                        order.setCompleteRackNumber(newRackNumber + order.getRackNumber());
+                    }
                 }
             }
         }
@@ -406,7 +567,7 @@ public class Planner extends Service<ObservableList<Rack>> {
                     mnCell.setCellStyle(cellStyle);
 
                     Cell rackCell = row.createCell(rackCellNumber);
-                    rackCell.setCellValue(rack.getPlannedRackNumber());
+                    rackCell.setCellValue(order.getCompleteRackNumber());
                     rackCell.setCellStyle(cellStyle);
                 }
             }

@@ -1,17 +1,18 @@
 /*
  * Developed by Guilherme F. Schling.
- * Last time updated: 15/08/2020 21:55.
- * Copyright (c) 2020.
+ * Last time updated: 14/01/2021 23:19.
+ * Copyright (c) 2021.
  */
 
 package com.sequencer.model;
 
 public class ManufacturingOrder {
-    private int line;
-    private int rackNumber;
-    private long orderNumber;
-    private String mn;
-    private int quantity;
+    private final int line;
+    private final int rackNumber;
+    private final long orderNumber;
+    private final String mn;
+    private final int quantity;
+    private String completeRackNumber;
 
     public ManufacturingOrder(int line, int rackNumber, long orderNumber, String mn, int quantity) {
         this.line = line;
@@ -25,40 +26,25 @@ public class ManufacturingOrder {
         return line;
     }
 
-    public void setLine(int line) {
-        this.line = line;
-    }
-
     public int getRackNumber() {
         return rackNumber;
     }
 
-    public void setRackNumber(int rackNumber) {
-        this.rackNumber = rackNumber;
+    public String getCompleteRackNumber() {
+        return completeRackNumber;
+    }
+
+    public void setCompleteRackNumber(String completeRackNumber) {
+        this.completeRackNumber = completeRackNumber;
     }
 
     public long getOrderNumber() {
         return orderNumber;
     }
 
-    public void setOrderNumber(long orderNumber) {
-        this.orderNumber = orderNumber;
-    }
 
     public String getMn() {
         return mn;
-    }
-
-    public void setMn(String mn) {
-        this.mn = mn;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
     }
 
     @Override
@@ -74,9 +60,5 @@ public class ManufacturingOrder {
             return (rackNumber == order.getRackNumber() && mn.equals(order.getMn()) && orderNumber == order.getOrderNumber());
         }
         return false;
-    }
-
-    public String getInformation() {
-        return "carro: " + line + " Rack JD: " + rackNumber + " Ordem: " + orderNumber + " MN: " + mn + " Quantidade: " + quantity;
     }
 }

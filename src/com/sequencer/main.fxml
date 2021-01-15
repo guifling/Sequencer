@@ -1,7 +1,7 @@
 <!--
   ~ Developed by Guilherme F. Schling.
-  ~ Last time updated: 10/09/2020 21:48.
-  ~ Copyright (c) 2020.
+  ~ Last time updated: 14/01/2021 23:19.
+  ~ Copyright (c) 2021.
   -->
 
 
@@ -59,7 +59,7 @@
                 </tooltip>
             </CheckBox>
 
-            <Label text="Último Rack Planejado:" GridPane.rowIndex="3" GridPane.columnIndex="0"
+            <Label text="Último Rack TW Planejado:" GridPane.rowIndex="3" GridPane.columnIndex="0"
                    GridPane.valignment="BOTTOM">
                 <padding>
                     <Insets top="20"/>
@@ -69,13 +69,53 @@
                        GridPane.valignment="BOTTOM" GridPane.columnSpan="2">
                 <tooltip>
                     <Tooltip
-                            text="Informar o número do último rack produzido ou informar um texto que será adicionado como prefixo de todos os racks planejados."
+                            text="Informar o número do último rack produzido de acordo com a sequência da TW ou informar um texto que será adicionado como prefixo de todos os racks planejados."
                             prefWidth="200" wrapText="true"/>
                 </tooltip>
             </TextField>
+
+            <Label text="Último rack JD de 5000:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+            <TextField fx:id="lastRack5kField"
+                       GridPane.rowIndex="4" GridPane.columnIndex="1" prefWidth="80">
+                <tooltip>
+                    <Tooltip text="Informar o último rack da sequência da JD da linha 5000 que foi planejado"
+                             prefWidth="200" wrapText="true"/>
+                </tooltip>
+            </TextField>
+            <HBox GridPane.rowIndex="4" GridPane.columnIndex="2">
+                <CheckBox fx:id="combineMachines" selected="true">
+                    <tooltip>
+                        <Tooltip
+                                text="Selecione esta opção se for necessário combinar máquinas diferentes em um mesmo rack."
+                                prefWidth="200" wrapText="true"/>
+                    </tooltip>
+                </CheckBox>
+                <Label text="Combinar Máquinas"/>
+            </HBox>
+
+
+            <Label text="Último rack JD de 6000 e 7000:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+            <TextField fx:id="lastRackTw6And7kField"
+                       GridPane.rowIndex="5" GridPane.columnIndex="1" prefWidth="80">
+                <tooltip>
+                    <Tooltip text="Informar o último rack da sequência da JD da linha 6000 e 7000 que foi planejado"
+                             prefWidth="200" wrapText="true"/>
+                </tooltip>
+            </TextField>
+
+            <Label text="Último rack JD de 8000:" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+            <TextField fx:id="lastRack8kField"
+                       GridPane.rowIndex="6" GridPane.columnIndex="1" prefWidth="80">
+                <tooltip>
+                    <Tooltip text="Informar o último rack da sequência da JD da linha 8000 que foi planejado"
+                             prefWidth="200" wrapText="true"/>
+                </tooltip>
+            </TextField>
+
+
             <Button fx:id="dropButton" text="Arraste aqui ou clique para procurar o arquivo..." prefWidth="230"
                     wrapText="true" textAlignment="CENTER" minHeight="100" onAction="#chooseFile"
-                    GridPane.rowIndex="4"
+                    GridPane.rowIndex="7"
                     style="-fx-border-style: solid; -fx-border-color: #838383; -fx-border-width: 2px; -fx-background-color: whitesmoke"
                     GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="RIGHT">
                 <GridPane.margin>
@@ -87,7 +127,8 @@
                             prefWidth="200" wrapText="true"/>
                 </tooltip>
             </Button>
-            <!--            <Button text="Selecionar Arquivo..." prefWidth="230" onAction="#chooseFile" GridPane.rowIndex="4"-->
+            <!--            <Button text="Selecionar Arquivo..." prefWidth="230" onAction="#chooseFile" GridPane
+            .rowIndex="7"-->
             <!--                    GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="RIGHT">-->
             <!--                <GridPane.margin>-->
             <!--                    <Insets top="60"/>-->
@@ -98,7 +139,7 @@
             <!--                            prefWidth="200" wrapText="true"/>-->
             <!--                </tooltip>-->
             <!--            </Button>-->
-            <Button text="Realizar Planejamento" prefWidth="230" onAction="#load" GridPane.rowIndex="5"
+            <Button text="Realizar Planejamento" prefWidth="230" onAction="#load" GridPane.rowIndex="8"
                     GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="RIGHT">
                 <GridPane.margin>
                     <Insets top="10"/>
