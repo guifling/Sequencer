@@ -1,6 +1,6 @@
 /*
  * Developed by Guilherme F. Schling.
- * Last time updated: 14/01/2021 23:19.
+ * Last time updated: 11/02/2021 23:55.
  * Copyright (c) 2021.
  */
 
@@ -23,6 +23,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * Responsible for planning actions.
+ */
 public class Planner extends Service<ObservableList<Rack>> {
     private final int ratio5k;
     private final int ratio6And7k;
@@ -489,7 +492,11 @@ public class Planner extends Service<ObservableList<Rack>> {
                         String newRackNumber = String.valueOf(lastRackTw++);//+ "-" + rack.getRackNumber();
                         rack.setPlannedRackNumber(newRackNumber);
                         for (ManufacturingOrder order : rack.getOrders()) {
-                            order.setCompleteRackNumber(newRackNumber + "-" + order.getRackNumber());
+                            if (order.getLine() == 148) {
+                                order.setCompleteRackNumber("8R" + newRackNumber + "-" + order.getRackNumber());
+                            } else {
+                                order.setCompleteRackNumber(newRackNumber + "-" + order.getRackNumber());
+                            }
                         }
                     }
                 } else {
@@ -504,7 +511,7 @@ public class Planner extends Service<ObservableList<Rack>> {
             } catch (Exception e) {
                 String newRackNumber = "";
                 if (!this.lastRackTw.trim().isEmpty()) {
-                    newRackNumber = lastRackTw + "-";
+                    newRackNumber = lastRackTw + "";
                 }
                 for (Rack rack : productionPlaning) {
                     rack.setPlannedRackNumber(newRackNumber + rack.getRackNumber());
