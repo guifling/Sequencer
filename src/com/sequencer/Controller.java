@@ -1,6 +1,6 @@
 /*
  * Developed by Guilherme F. Schling.
- * Last time updated: 14/01/2021 23:19.
+ * Last time updated: 16/09/2021 20:30.
  * Copyright (c) 2021.
  */
 
@@ -33,7 +33,7 @@ public class Controller {
     @FXML
     private Spinner<Integer> ratio5kField, ratio6And7kField, ratio8kField;
     @FXML
-    private CheckBox doNotLoad5k, doNotLoad6And7k, doNotLoad8k, combineMachines;
+    private CheckBox doNotLoad5k, doNotLoad6And7k, doNotLoad8k, doNotLoadInternal8k, combineMachines;
     @FXML
     private ImageView successfulImage;
     @FXML
@@ -114,6 +114,7 @@ public class Controller {
             planner.setDoNotLoad5k(doNotLoad5k.isSelected());
             planner.setDoNotLoad6And7k(doNotLoad6And7k.isSelected());
             planner.setDoNotLoad8k(doNotLoad8k.isSelected());
+            planner.setDoNotLoadInternal8k(doNotLoadInternal8k.isSelected());
             planner.setOnRunning(event -> progress.setVisible(true));
 
             planner.setOnSucceeded(event -> {
@@ -133,10 +134,10 @@ public class Controller {
                 plannerIsRunning = false;
                 progress.setVisible(false);
                 successfulImage.setVisible(true);
-                chosenFile = null;
-                dropButton.setText("Arraste aqui ou clique para procurar outro arquivo...");
-                dropButton.setTextFill(Paint.valueOf("#000000"));
-                dropButton.setStyle("-fx-border-style: solid; -fx-border-color: #838383; -fx-border-width: 2px; -fx-background-color: whitesmoke");
+//                chosenFile = null;
+//                dropButton.setText("Arraste aqui ou clique para procurar outro arquivo...");
+//                dropButton.setTextFill(Paint.valueOf("#000000"));
+//                dropButton.setStyle("-fx-border-style: solid; -fx-border-color: #838383; -fx-border-width: 2px; -fx-background-color: whitesmoke");
             });
             progress.progressProperty().bind(planner.progressProperty());
             planner.start();

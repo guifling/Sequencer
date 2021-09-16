@@ -1,10 +1,11 @@
 /*
  * Developed by Guilherme F. Schling.
- * Last time updated: 11/02/2021 23:55.
+ * Last time updated: 16/09/2021 20:30.
  * Copyright (c) 2021.
  */
 
 package com.sequencer.model;
+
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -41,6 +42,7 @@ public class Planner extends Service<ObservableList<Rack>> {
     private boolean doNotLoad5k;
     private boolean doNotLoad6And7k;
     private boolean doNotLoad8k;
+    private boolean doNotLoadInternal8k;
     private final boolean combineMachines;
 
     public Planner() {
@@ -137,6 +139,9 @@ public class Planner extends Service<ObservableList<Rack>> {
                 } else if (carNumber == 150 && lastRack6And7k >= rackNumber) {
                     iterator.remove();
                     continue;
+                } else if (carNumber == 482 && lastRack8k >= rackNumber) {
+                    iterator.remove();
+                    continue;
                 }
 
                 long orderNumber = Long.parseLong(row.getCell(3).getStringCellValue());
@@ -146,7 +151,7 @@ public class Planner extends Service<ObservableList<Rack>> {
                 ManufacturingOrder manufacturingOrder = new ManufacturingOrder(carNumber, rackNumber, orderNumber, mn, quantity);
 
                 // Do not load 148 (8R)
-                if (ratio8k <= 0 || doNotLoad8k) {
+                if (ratio8k <= 0 || doNotLoad8k || doNotLoadInternal8k) {
                     if (manufacturingOrder.getLine() == 148) {
                         continue;
                     }
@@ -163,6 +168,15 @@ public class Planner extends Service<ObservableList<Rack>> {
                         continue;
                     }
                 }
+
+
+                // Do not load if ratio8k is less then or equal to 0 (in this case the user does not want to include this order to the planning.
+                if (ratio8k <= 0 || !doNotLoadInternal8k) {
+                    if (manufacturingOrder.getLine() == 482) {
+                        continue;
+                    }
+                }
+
                 loadedOrders.add(manufacturingOrder);
             }
         } catch (NullPointerException e) {
@@ -292,7 +306,7 @@ public class Planner extends Service<ObservableList<Rack>> {
             }
 
             for (Machine machine : machines) {
-                if (machine.getLine() == 148) {
+                if (machine.getLine() == 148 || machine.getLine() == 482) {
                     machinesTobePlanned8k.add(machine);
                 }
             }
@@ -389,7 +403,7 @@ public class Planner extends Service<ObservableList<Rack>> {
         }
 
         for (Rack rack : sourceRackList) {
-            if (rack.getLine() == 148) {
+            if (rack.getLine() == 148 || rack.getLine() == 482) {
                 racksTobePlanned8k.add(rack);
             }
         }
@@ -492,11 +506,12 @@ public class Planner extends Service<ObservableList<Rack>> {
                         String newRackNumber = String.valueOf(lastRackTw++);//+ "-" + rack.getRackNumber();
                         rack.setPlannedRackNumber(newRackNumber);
                         for (ManufacturingOrder order : rack.getOrders()) {
-                            if (order.getLine() == 148) {
-                                order.setCompleteRackNumber("8R" + newRackNumber + "-" + order.getRackNumber());
-                            } else {
-                                order.setCompleteRackNumber(newRackNumber + "-" + order.getRackNumber());
-                            }
+//                            if (order.getLine() == 148) {
+//                                order.setCompleteRackNumber("8R" + newRackNumber + "-" + order.getRackNumber());
+//                            } else {
+//                                order.setCompleteRackNumber(newRackNumber + "-" + order.getRackNumber());
+//                            }
+                            order.setCompleteRackNumber(newRackNumber + "-" + order.getRackNumber());
                         }
                     }
                 } else {
@@ -618,5 +633,13 @@ public class Planner extends Service<ObservableList<Rack>> {
      */
     public void setDoNotLoad8k(boolean doNotLoad8k) {
         this.doNotLoad8k = doNotLoad8k;
+    }
+
+    public boolean isDoNotLoadInternal8k() {
+        return doNotLoadInternal8k;
+    }
+
+    public void setDoNotLoadInternal8k(boolean doNotLoadInternal8k) {
+        this.doNotLoadInternal8k = doNotLoadInternal8k;
     }
 }

@@ -1,6 +1,6 @@
 <!--
   ~ Developed by Guilherme F. Schling.
-  ~ Last time updated: 14/01/2021 23:19.
+  ~ Last time updated: 16/09/2021 20:30.
   ~ Copyright (c) 2021.
   -->
 
@@ -111,6 +111,16 @@
                              prefWidth="200" wrapText="true"/>
                 </tooltip>
             </TextField>
+            <HBox GridPane.rowIndex="6" GridPane.columnIndex="2">
+                <CheckBox fx:id="doNotLoadInternal8k" selected="false">
+                    <tooltip>
+                        <Tooltip
+                                text="Selecione esta opção quando for desejado adicionar apenas os rodados externos de 8R no planejamento sem os rodados internos."
+                                prefWidth="200" wrapText="true"/>
+                    </tooltip>
+                </CheckBox>
+                <Label text="Apenas externos"/>
+            </HBox>
 
 
             <Button fx:id="dropButton" text="Arraste aqui ou clique para procurar o arquivo..." prefWidth="230"
@@ -154,7 +164,7 @@
     </center>
     <bottom>
         <GridPane alignment="CENTER_LEFT" style="-fx-background-color: #333333;">
-            <Label text="Made by:: Guilherme F. Schling (2020)"
+            <Label text="Made by:: Guilherme F. Schling (2021)"
                    style="-fx-font-family: 'MV Boli' ;-fx-font-size: 0.8em; -fx-text-fill: #dcdcdc;"
                    HBox.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.columnIndex="0" GridPane.halignment="LEFT"
                    GridPane.hgrow="ALWAYS"/>
